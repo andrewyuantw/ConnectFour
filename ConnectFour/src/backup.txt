@@ -1,0 +1,108 @@
+public static void GameVsComputer() {
+		int [] [] board = new int [6][7];
+		int moves = 0;
+		boolean first = true;
+		Scanner input = new Scanner (System.in) ;
+		showBoard(board);
+		Tree gameTree = new Tree();
+		
+		System.out.println();
+		
+		while (moves < 42) {
+			System.out.println("Please enter your column.");
+			int x = input.nextInt();
+			while (! addMove(board,x,1)) {
+				System.out.println("Please enter your column.");
+				x = input.nextInt();
+			};
+			if (first) {
+				State rootState = new State(board, x, 1, 0);
+				Node root = new Node(rootState, null);
+				gameTree.root = root;
+				
+				
+			}
+			moves ++;
+			showBoard(board);
+			boolean winStatus = checkWin(board, x, 1);
+			System.out.println(winStatus);
+			if (winStatus) {
+                System.out.println("You win!");
+                input.close();
+                break;
+            }
+			int y = bestMoveWithMCTS(board, gameTree, x, first);
+			if (first) {
+				first = false;
+			}
+			System.out.println("Computer played: " + y);
+			addMove(board,y,2);
+			moves ++;
+			showBoard(board);
+			winStatus = checkWin(board, y, 2);
+			System.out.println(winStatus);
+			if (winStatus) {
+                System.out.println("You lose!");
+                input.close();
+				break;
+			}
+		}
+		if (moves == 42) {
+            System.out.println("It's a draw");
+            input.close();
+		}
+		
+		
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public static int ComputervsComputerMCTS(int [][]board, int moves) {
+		while (moves < 42) {
+			
+			int x = (int) (Math.random() * 7);
+			int counter = 0;
+			while (!addMove(board,x,1)) {
+				counter ++;
+				x = (int) (Math.random() * 7);
+				if (counter >= 10) {
+					return 3;
+				}
+			}
+			moves ++;
+			boolean winStatus = checkWin(board, x, 1);
+			if (winStatus) {
+				
+				return 1;
+			}
+			if (moves == 42) {
+				return 3;
+			}
+			int y = (int) (Math.random() * 7);
+			
+			counter = 0;
+			while (! addMove(board, y, 2)) {
+				counter ++;
+				y = (int) (Math.random() * 7);
+				if (counter >= 10) {
+					
+					return 3;
+				}
+			}
+			moves ++;
+			winStatus = checkWin(board, y, 2);
+			if (winStatus) {
+				
+				return 2;
+			}
+		}
+		return 3;
+	}
