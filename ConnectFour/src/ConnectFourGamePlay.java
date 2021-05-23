@@ -1,63 +1,85 @@
-import java.util.List;
-import java.util.Random;
+
 import java.util.Scanner;
 
-
-
+// Class for basic rules of ConnectFour
 public class ConnectFourGamePlay {
+
+    // Note that unplayed slots are represented as zeroes, while player 1 and player 2
+    // are represented with 1s and 2s respectively
 	
+    // This function simply prints out the board
 	public static void showBoard(int [][]board) {
 		for (int i = 0; i < 6;  i ++) {
-			for (int r = 0; r < 7; r ++) {
+			for (int r = 0; r < 7; r ++) 
 				System.out.print(board[i][r] + " ");
-			}
 			System.out.println();
 		}
 	}
 	
+    // This function drops a marker into the desired column
+    // The function returns true if the addMove was successful, false if not
 	public static boolean addMove(int [][]board, int move, int player) {
+
+        // First check if that column is full
+        // Ex. If column 1 has been completely filled up, we cannot put a marker in column 1
 		if (board[0][move] == 0) {
+
+            // Move down the column until we either reach a nonzero value, or the end of the board
 			for (int i = 0; i < 5;  i ++) {
 				if (board[i+1][move]!=0) {
 					board[i][move] = player;
 					break;
 				}
 			}
-			if (board[5][move] == 0) {
+			if (board[5][move] == 0) 
 				board[5][move] = player;
-			}
 			return true;
 		}
 		return false;
 	}
 	
+    // The following functions check if the newest move has caused someone to win
+     
+    // For efficiency sake, I only check the column of the move
 	public static boolean checkVertical(int [] [] board, int move, int player) {
 		int tally = 0;
 		for (int i = 0; i < 6;  i ++) {
-			if (board[i][move] == player) {tally ++;}
-			else {tally = 0;}
-			if (tally == 4) {return true;}
+			if (board[i][move] == player)
+                tally ++;
+			else 
+                tally = 0;
+			if (tally == 4) 
+                return true;
 		}
 		return false;
 	}
 	
+    // For efficiency sake, I only check the row of the move
 	public static boolean checkHorizontal(int [] [] board, int move, int player) {
 		int tally = 0;
 		int index = 0;
+
+        // First we have to find the row that the marker ended up on
 		for (int i = 0; i < 6;  i ++) {
 			if (board[i][move]==player) {
 				index = i;
 				break;
 			}
 		}
+
+        // We must check board[index] and see if player has won
 		for (int i = 0; i < 7;  i ++) {
-			if (board[index][i] == player) {tally ++;}
-			else {tally = 0;}
-			if (tally == 4) {return true;}
+			if (board[index][i] == player) 
+                tally ++;
+			else 
+                tally = 0;
+			if (tally == 4) 
+                return true;
 		}
 		return false;
 	}
 	
+    // Checks the diagonal axis for win condition
 	public static boolean checkTopRight(int [] [] board, int move, int player) {
 		int tally = 0;
 		int index = 0;
@@ -67,10 +89,14 @@ public class ConnectFourGamePlay {
 				break;
 			}
 		}
+
 		int base = move;
 		int total = index + move;
 		
-		if (total < 4 || total > 8) {return false;}
+        // Return false because the diagonal axis has less than four spots, making it impossible to win
+		if (total < 4 || total > 8) 
+            return false;
+
 		int baserow = 0;
 		while (index != 0) {
 			index --;
@@ -83,14 +109,17 @@ public class ConnectFourGamePlay {
 		
 		int [] count = {0,0,0,4,5,6,6,5,4};
 		for (int i = 0; i < count[total];  i ++) {
-			
-			if (board[baserow + i][base - i] == player) {tally ++;}
-			else {tally = 0;}
-			if (tally == 4) {return true;}
+			if (board[baserow + i][base - i] == player) 
+                tally ++;
+			else 
+                tally = 0;
+			if (tally == 4) 
+                return true;
 		}
 		return false;
 	}
 	
+    // Checks the other diagonal axis for win condition
 	public static boolean checkTopLeft(int [] [] board, int move, int player) {
 		int tally = 0;
 		int index = 0;
@@ -100,10 +129,11 @@ public class ConnectFourGamePlay {
 				break;
 			}
 		}
-		
+
 		int base = move;
 		int total = 6 - move + index;
-		if (total < 4 || total > 8) {return false;}
+		if (total < 4 || total > 8) 
+            return false;
 		int baserow = 0;
 		while (index != 0) {
 			index --;
@@ -117,13 +147,18 @@ public class ConnectFourGamePlay {
 		
 		int [] count = {0,0,0,4,5,6,6,5,4};
 		for (int i = 0; i < count[total];  i ++) {
-			if (board[baserow + i][base + i] == player) {tally ++;}
-			else {tally = 0;}
-			if (tally == 4) {return true;}
+			if (board[baserow + i][base + i] == player) 
+                tally ++;
+			else 
+                tally = 0;
+			if (tally == 4) 
+                return true;
 		}
 		return false;
 	}
-	
+
+
+	// Checks the whole board for a win condition
 	public static boolean checkWin(int [] [] board, int move, int player) {
 		if (checkVertical(board,move,player) || checkHorizontal(board,move,player) || checkTopRight(board,move,player) || checkTopLeft(board,move,player)) {
 			return true;
