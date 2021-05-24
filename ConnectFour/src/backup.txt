@@ -106,3 +106,9 @@ public static void GameVsComputer() {
 		}
 		return 3;
 	}
+
+
+
+    tempNode.incrementVisit();
+	        if (result == 2) 
+	            tempNode.incrementWins();

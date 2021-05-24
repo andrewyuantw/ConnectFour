@@ -4,55 +4,70 @@ public class MonteCarloTree {
 	
 	public static int findNextMove (Node node) {
 
+        // Sets the node's parent as null for our back propogation
 		node.parent = null;
 
-		System.out.println("Initial root info ......");
-		for (Node n: node.children) {
-			System.out.println("Move: " + n.move);
-			System.out.println("Num wins: " + n.wins);
-			System.out.println("Num visits: " + n.visitCounter);
-		}
-		
 		int i = 0;
 
+        expandNode(node);
+        for (Node n: node.children){
+            expandNode(n);
+            for (Node next: n.children){
+                if (next.endResult == 1 && n.move != next.move){
+                    return next.move;
+                }
+            }
+            
+            
+        }
+
         // We do 100000 trials to find the best node
-		while (i < 100000) {
+		while (i < 10000000) {
 			selfPlaySimulation(node);
             i++;
 		}
 
 		Node winner = node.getMaxChild();
         return winner.move;
-		
 	}
 
     static private int selfPlaySimulation(Node currentBoard){
+        
+        // Goes down our tree to find an unexplored board
         Node selected = selectNode(currentBoard);
 
         // We first check if this unexplored node is a winning board
         if (selected.endResult == 0) {
+            // If it is ongoing, we expand the node to find all possible next moves
             expandNode(selected);
         }
 
         if (selected.children.size() > 0) 
             selected = selected.getRandomChildNode();
         
-        
-        
+
         int playoutResult = 0;
         
+        // If the selected board is no longer ongoing, we know the playoutResult
         if (selected.endResult != 0) {
             playoutResult = selected.endResult;
+            // With the playoutResult, we back propogate up the tree
+            backPropogation(selected, playoutResult);
         }
         else if (selected.player == 1) 
+            // If the last move of this unexplored node was made by the user,
+            // we make a recursive call on selected
             playoutResult = selfPlaySimulation(selected);
         else {
+            // If the last move of this unexplored node was made by the computer,
+            // we need to make a move for the player. We assume the player is going
+            // to be intelligent and always make the best move in their interest
             expandNode(selected);
-            
-            selected = selected.getRandomChildNode();
+            selected = selected.getMinChild();
             playoutResult = selfPlaySimulation(selected);
         }
-        backPropogation(selected, playoutResult);
+
+        
         
         return playoutResult;
     }
@@ -67,7 +82,7 @@ public class MonteCarloTree {
 	    return node;
 	}
 	
-    // UCT formula to find the best node to visit
+    // UCT (Upper Confident applied to Trees) formula to find the best node to visit
 	public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
 	        if (nodeVisit == 0) 
 	            return Integer.MAX_VALUE;
@@ -112,14 +127,13 @@ public class MonteCarloTree {
 				ConnectFourGamePlay.addMove(copyboard, i, opponent);
                 Node newNode = new Node(node, copyboard, opponent, i, node.movesPerformed + 1);
 
-                
-				if (node.endResult != 0) {
+                // checks the endResult for this new board before adding to the children ArrayList
+				if (node.endResult != 0) 
 					newNode.endResult = node.endResult;
-				} else if (ConnectFourGamePlay.checkWin(copyboard, i, opponent)) {
+				else if (ConnectFourGamePlay.checkWin(copyboard, i, opponent)) 
 					newNode.endResult = opponent;
-				} else if (newNode.movesPerformed == 42) {
+				else if (newNode.movesPerformed == 42) 
                     newNode.endResult = 3;
-                }
 		    	
 		    	node.children.add(newNode);
 	    	}

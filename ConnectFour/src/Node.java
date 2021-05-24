@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Node {
 
-    // Each Node also has a parent. It will contain information of the board prior to a move
+    // Each Node also has a parent.
 	Node parent;
 	
     // The ArrayList contains all possible moves that can be made on this board.
@@ -23,16 +23,15 @@ public class Node {
     // wins counts the amount of times we've won when visiting this node 
 	int wins;
 
-    // move includes the move to be played, with the move represented as the column to drop a marker
+    // move includes the move to be played, with the move represented as the column that a marker was dropped
 	int move;
 
-    // movesPerformed keeps track of the amount of moves in the game so we know if there has been a tie
+    // movesPerformed keeps track of the amount of moves in the game so we know if there has been a draw
 	int movesPerformed;
 
     // Stores end result - 0 means no winner yet, 1 means Player 1 won, 2 means Player 2 won, 3 means ended in a draw
 	int endResult = 0;
 	
-    
     // Constructor for a node
 	public Node(Node parent, int [][] originalBoard, int player, int move, int movesPerformed) {
 		this.parent = parent;
@@ -50,7 +49,7 @@ public class Node {
 	    return randomElement;
 	}
 	
-
+    // This function retrieves the child node with the highest win rate
 	public Node getMaxChild() {
 		Node best = null;
 		double bestScore = 0;
@@ -66,25 +65,26 @@ public class Node {
 				best = node;
 			}
 		}
-		
 		return best; 
 	}
 
-    public boolean addMove(int [][]board, int move, int player) {
-		if (board[0][move] == 0) {
-			for (int i = 0; i < 5;  i ++) {
-				if (board[i+1][move]!=0) {
-					board[i][move] = player;
-					break;
-				}
+    // This function retrieves the child node with the lowest win rate
+    // This is useful when we want to assume our player is intelligent and will always
+    // make the move that would cause the computer to have the lowest win rate
+    public Node getMinChild() {
+
+		Node worst = children.get(0);
+		double worstScore = (double)(worst.wins)/ (double)(worst.visitCounter);
+		for (Node node: children) {
+			double nodeScore = (double)(node.wins) / (double)(node.visitCounter);
+			if (worstScore > nodeScore) {
+				worstScore = nodeScore;
+				worst = node;
 			}
-			if (board[5][move] == 0) 
-				board[5][move] = player;
-			return true;
 		}
-		return false;
+		return worst; 
 	}
-	
+
 	public void incrementVisit() {
 		this.visitCounter ++;
 	}

@@ -139,12 +139,10 @@ public class ConnectFourGamePlay {
 			index --;
 			base --;
 		}
-		
 		if (base < 0) {
 			baserow = 0-base;
 			base = 0;
 		}
-		
 		int [] count = {0,0,0,4,5,6,6,5,4};
 		for (int i = 0; i < count[total];  i ++) {
 			if (board[baserow + i][base + i] == player) 
@@ -157,12 +155,10 @@ public class ConnectFourGamePlay {
 		return false;
 	}
 
-
 	// Checks the whole board for a win condition
 	public static boolean checkWin(int [] [] board, int move, int player) {
-		if (checkVertical(board,move,player) || checkHorizontal(board,move,player) || checkTopRight(board,move,player) || checkTopLeft(board,move,player)) {
+		if (checkVertical(board,move,player) || checkHorizontal(board,move,player) || checkTopRight(board,move,player) || checkTopLeft(board,move,player)) 
 			return true;
-		}
 		return false;
 	}
 	
@@ -175,7 +171,6 @@ public class ConnectFourGamePlay {
 
         // Creates placeholder currentBoard with move 0
         Node currentBoard = new Node (null, board, 1, 1, 0);
-		
 		System.out.println();
 		
 		while (currentBoard.movesPerformed < 42) {
@@ -194,7 +189,6 @@ public class ConnectFourGamePlay {
 				currentBoard = new Node(null, board, 1, x, 1);
                 first = false;
 			} else {
-
                 // otherwise we try to locate the next board from the children
                 boolean foundBoard = false;
                 for (Node n: currentBoard.children){
@@ -203,7 +197,6 @@ public class ConnectFourGamePlay {
                         foundBoard = true;
                     }
                 }
-
                 // If we could not find the next board, we create the next board
                 if (!foundBoard){
                     Node newNode = new Node(currentBoard, board, 1, x, currentBoard.movesPerformed + 1);
@@ -228,13 +221,24 @@ public class ConnectFourGamePlay {
             }
         
 			int y = MonteCarloTree.findNextMove(currentBoard);
-
             System.out.println("The best move is " + y);
+
+            
+
             // Updates the currentBoard
             for (Node n: currentBoard.children){
                 if (n.move == y)
                     currentBoard = n;
             }
+
+            Node z = currentBoard.getMinChild();
+            double win = (double)(z.wins)/(double)(z.visitCounter);
+
+            
+
+            System.out.println("I predict you do " + z.move);
+            System.out.println("Win rate: " + (1 - win));
+
 
             if (currentBoard.endResult != 0){
                 if (currentBoard.endResult == 1){
@@ -252,6 +256,7 @@ public class ConnectFourGamePlay {
                 }
             }
         }
+
         System.out.println("Ended in a draw!");
         return;
     }
