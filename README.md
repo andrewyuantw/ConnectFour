@@ -2,11 +2,11 @@
 
 ### About
 
-I decided to create this because I always got beaten in a game of ConnectFour. I was interested in Machine Learning and wanted to learn more about how something like AlphaGo operates. Due to ConnectFour's more simplistic rules, I was able to to use a simpler method to generate the best move for a board.
+I decided to create this because I always got beaten in a game of ConnectFour. I was interested in Machine Learning and wanted to learn more about how something like AlphaGo operates. Due to ConnectFour's more simplistic rules, I was able to to use a simpler method to find the best move for a board.
 
 ### How It Works
 
-My initial idea was to code up the rules for ConnectFour, and have the computer play numerous randomized games against itself. My code improves upon this concept, using the Monte Carlo Tree Search algorithm to make it more efficient. 
+My initial idea was to code up the rules for ConnectFour, and have the computer play numerous randomized games against itself, tallying up the amount of wins to find the best move. My code improves upon this concept, using the Monte Carlo Tree Search algorithm to make this method of playing out a scenario and tallying the results more efficient. 
 
 ### Code Structure
 
@@ -24,10 +24,10 @@ I have a Node class, with the following attributes
 
 ### Monte Carlo Tree Search
   
-1) We first find all possibile next moves of a given board (usually seven, but if one or more column is already completely full, then there will be less than seven)
-2) We want to find the next move that would give us the largest percentage of winning. Of course we can visit each possible next move an equal amount of time and see which move gives us the largest winning percentage. However, we want something better. We want to visit the possibilities with a higher chance of winning to see if the high win rate holds with more trial runs, but we also want to ensure we thoroughly explore other nodes. This is where the Monte Carlo Tree Search algorithm comes in. Using the UCT (Upper Confidence bounds applied to Trees) algorithm, we find a balance between choosing unexplored nodes, and nodes with high win rates.
+1) We first find all possibile next moves of a given board (this is usually seven, but if one or more columns are already completely full, then there will be less than seven)
+2) We want to find the next move that would give us the largest percentage of winning. Of course we could visit each possible next move an equal amount and see which move gives us the largest winning percentage. However, we can do something better. We want to visit the possibilities with a higher chance of winning to see if the high win rate holds with more trial runs, but we also want to ensure we thoroughly explore other nodes. This is where the Monte Carlo Tree Search and UCT algorithms comes in. Using the UCT (Upper Confidence bounds applied to Trees) algorithm, we find a balance between choosing unexplored nodes, and nodes with high win rates.
 3) After we find a node to explore, we play out the node using recursive calls until we reach a result - either a player wins or we reach a draw.
 4) We then back propogate up the tree - incrementing the visitCounter for each node visited, and if the result ends in a win, we increment the winCounter as well.
-5) We can now examine the win rates of the children of our initial node, and determine the best move.
+5) We can now examine the win rates of the children of our initial node, and determine the best move. The win percentage is found by evaluating winCounter/visitCounter.
   
   
