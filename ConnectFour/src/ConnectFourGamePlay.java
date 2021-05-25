@@ -167,7 +167,6 @@ public class ConnectFourGamePlay {
 		int [] [] board = new int [6][7];
 		boolean first = true;
 		Scanner input = new Scanner (System.in) ;
-		
 
         // Creates placeholder currentBoard with move 0
         Node currentBoard = new Node (null, board, 1, 1, 0);
@@ -223,22 +222,11 @@ public class ConnectFourGamePlay {
 			int y = MonteCarloTree.findNextMove(currentBoard);
             System.out.println("The best move is " + y);
 
-            
-
             // Updates the currentBoard
             for (Node n: currentBoard.children){
                 if (n.move == y)
                     currentBoard = n;
             }
-
-            Node z = currentBoard.getMinChild();
-            double win = (double)(z.wins)/(double)(z.visitCounter);
-
-            
-
-            System.out.println("I predict you do " + z.move);
-            System.out.println("Win rate: " + (1 - win));
-
 
             if (currentBoard.endResult != 0){
                 if (currentBoard.endResult == 1){
@@ -256,11 +244,9 @@ public class ConnectFourGamePlay {
                 }
             }
         }
-
         System.out.println("Ended in a draw!");
         return;
     }
-
 	
     public static void main(String[ ] args)
 	{

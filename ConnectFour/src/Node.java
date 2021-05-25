@@ -20,8 +20,12 @@ public class Node {
     // visitCounter counts the amount of times we've visited this node
 	int visitCounter;
 
-    // wins counts the amount of times we've won when visiting this node 
+    // wins counts the amount of times the computer has won when visiting this node 
 	int wins;
+
+    // opWins counts the amount of times the opponent has won. 
+    // Useful if we want to assume our opponent will always make the move in their best interest
+    int opWins;
 
     // move includes the move to be played, with the move represented as the column that a marker was dropped
 	int move;
@@ -60,6 +64,9 @@ public class Node {
 			System.out.println("Num wins: " + node.wins);
 			System.out.println("Num visits: " + node.visitCounter);
             System.out.format("Percentage: %.4f\n", (double)(node.wins)/(double)(node.visitCounter));
+            System.out.println("Predicted next move: " + node.getMinChild().move);
+            System.out.println("Predicted next move wins: " + node.getMinChild().opWins);
+            System.out.println("Predicted next move visits: " + node.getMinChild().visitCounter);
 			if ( nodeScore >= bestScore) {
 				bestScore = nodeScore;
 				best = node;
@@ -67,22 +74,26 @@ public class Node {
 		}
 		return best; 
 	}
-
-    // This function retrieves the child node with the lowest win rate
-    // This is useful when we want to assume our player is intelligent and will always
-    // make the move that would cause the computer to have the lowest win rate
-    public Node getMinChild() {
-
-		Node worst = children.get(0);
-		double worstScore = (double)(worst.wins)/ (double)(worst.visitCounter);
+    
+    // This function retrieves the child node with the highest win rate for the opponent
+    // This is useful if we want to assume the player will be intelligent and play 
+    // to their best interest as opposed to making a random choice for them
+	public Node getMinChild() {
+		Node best = null;
+		double bestScore = 0;
 		for (Node node: children) {
-			double nodeScore = (double)(node.wins) / (double)(node.visitCounter);
-			if (worstScore > nodeScore) {
-				worstScore = nodeScore;
-				worst = node;
+			double nodeScore = (double)(node.opWins) / (double)(node.visitCounter);
+			if (nodeScore >= bestScore) {
+				bestScore = nodeScore;
+				best = node;
 			}
 		}
-		return worst; 
+        if (best == null)
+            System.out.println("oops null");
+
+        // If we have no info for the child node's yet, best will hold null
+        // In this case, we will just return a random child node
+        return (best == null) ? this.getRandomChildNode() : best;
 	}
 
 	public void incrementVisit() {
@@ -91,5 +102,9 @@ public class Node {
 
 	public void incrementWins() {
 		this.wins ++;
+	}
+
+    public void incrementOpWins() {
+		this.opWins ++;
 	}
 }

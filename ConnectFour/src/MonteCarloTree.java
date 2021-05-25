@@ -9,20 +9,8 @@ public class MonteCarloTree {
 
 		int i = 0;
 
-        expandNode(node);
-        for (Node n: node.children){
-            expandNode(n);
-            for (Node next: n.children){
-                if (next.endResult == 1 && n.move != next.move){
-                    return next.move;
-                }
-            }
-            
-            
-        }
-
         // We do 100000 trials to find the best node
-		while (i < 10000000) {
+		while (i < 10000) {
 			selfPlaySimulation(node);
             i++;
 		}
@@ -36,6 +24,12 @@ public class MonteCarloTree {
         // Goes down our tree to find an unexplored board
         Node selected = selectNode(currentBoard);
 
+        // Two possibilities here:
+        // Case 1: The board has a result already - in this case, we can go 
+        // straight to back propogating the result up the tree
+        // Case 2: The board is still ongoing - we will need to keep expanding 
+        // the node until we reach a result
+
         // We first check if this unexplored node is a winning board
         if (selected.endResult == 0) {
             // If it is ongoing, we expand the node to find all possible next moves
@@ -45,7 +39,6 @@ public class MonteCarloTree {
         if (selected.children.size() > 0) 
             selected = selected.getRandomChildNode();
         
-
         int playoutResult = 0;
         
         // If the selected board is no longer ongoing, we know the playoutResult
@@ -53,22 +46,19 @@ public class MonteCarloTree {
             playoutResult = selected.endResult;
             // With the playoutResult, we back propogate up the tree
             backPropogation(selected, playoutResult);
-        }
-        else if (selected.player == 1) 
+        } else if (selected.player == 1) {
             // If the last move of this unexplored node was made by the user,
             // we make a recursive call on selected
             playoutResult = selfPlaySimulation(selected);
-        else {
+        } else {
             // If the last move of this unexplored node was made by the computer,
-            // we need to make a move for the player. We assume the player is going
-            // to be intelligent and always make the best move in their interest
+            // we need to make a move for the player. Since selected is an unexplored
+            // node, we choose a random move for the opponent
             expandNode(selected);
-            selected = selected.getMinChild();
+            selected = selected.getRandomChildNode();
             playoutResult = selfPlaySimulation(selected);
         }
 
-        
-        
         return playoutResult;
     }
 	
@@ -76,9 +66,20 @@ public class MonteCarloTree {
 	private static Node selectNode(Node root) {
 	    Node node = root;
 
-        // We find an unexplored node 
+        // Two possibilites:
+        // Case 1: The player made the last move - we call UCT to get a move 
+        // that we (the computer) want to explore
+        // Case 2: The computer made the last move - we call getMinChild to get
+        // the opponent's best move since we assume the opponent is always going 
+        // to make the best move.
+
+        // We loop until we find an unexplored node 
 	    while (node.children.size() != 0) 
-	        node = UCT(node);
+            if (node.player == 2){
+                node = opUCT(node);
+            } else {
+                node = UCT(node);
+            }
 	    return node;
 	}
 	
@@ -103,19 +104,31 @@ public class MonteCarloTree {
         }
         return best; 
     }
+
+    // Goes through the children to find the child with the highest uctValue
+	public static Node opUCT(Node node) {
+        int parentVisit = node.visitCounter;
+        double max = 0;
+        Node best = null;
+        for (Node curr: node.children) {
+        	double temp = uctValue(parentVisit, curr.opWins, curr.visitCounter);
+        	if (temp > max) {
+        		max = temp;
+        		best = curr;
+        	}
+        }
+        return best; 
+    }
 	
     // Function that expands the node, populating its children ArrayList
 	public static void expandNode(Node node) {
-
         // Goes through each column
 	    for (int i = 0; i < 7; i ++) {
-
             boolean foundChild = false;
             for (Node n: node.children){
                 if (n.move == i)
                     foundChild = true;
             }
-
             // If the column is already full, we do nothing
 	    	if (!foundChild && node.board[0][i] == 0) {
 	    		int [][] copyboard = new int [6][7];
@@ -137,7 +150,6 @@ public class MonteCarloTree {
 		    	
 		    	node.children.add(newNode);
 	    	}
-	    	
 	    }
 	}
 	
@@ -148,6 +160,8 @@ public class MonteCarloTree {
 	        tempNode.incrementVisit();
 	        if (result == 2) 
 	            tempNode.incrementWins();
+            else if (result == 1)
+                tempNode.incrementOpWins();
 	        tempNode = tempNode.parent;
 	    }
 	}
