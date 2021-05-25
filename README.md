@@ -4,9 +4,9 @@
 
 I decided to create this because I always got beaten in a game of ConnectFour. I was interested in Machine Learning and wanted to learn more about how something like AlphaGo operates. Due to ConnectFour's more simplistic rules, I was able to to use a simpler method to find the best move for a board.
 
-### How It Works
+### Background
 
-My initial idea was to code up the rules for ConnectFour, and have the computer play numerous randomized games against itself, tallying up the amount of wins to find the best move. My code improves upon this concept, using the Monte Carlo Tree Search algorithm to make this method of playing out a scenario and tallying the results more efficient. 
+My initial idea was to code up the rules for ConnectFour, and have the computer play numerous randomized games against itself, tallying up the amount of wins to find the best move. My second iteration improves upon this concept, using the Monte Carlo Tree Search algorithm to make this method of playing out a scenario and tallying the results more efficient. I am now working on making the opponent use this method as well. In other words, instead of predicting our next move against a random player, we are assuming the opponent is as smart as possible and will always make the best move.
 
 ### Code Structure
 
