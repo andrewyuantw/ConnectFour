@@ -20,6 +20,9 @@ public class ConnectFourGamePlay {
     // The function returns true if the addMove was successful, false if not
 	public static boolean addMove(int [][]board, int move, int player) {
 
+        if (move < 0 || move > 6)
+            return false;
+
         // First check if that column is full
         // Ex. If column 1 has been completely filled up, we cannot put a marker in column 1
 		if (board[0][move] == 0) {
@@ -220,12 +223,21 @@ public class ConnectFourGamePlay {
             }
         
 			int y = MonteCarloTree.findNextMove(currentBoard);
-            System.out.println("The best move is " + y);
+            System.out.println();
+            System.out.println("The computer's move is " + y);
+            System.out.println();
 
             // Updates the currentBoard
             for (Node n: currentBoard.children){
                 if (n.move == y)
                     currentBoard = n;
+            }
+
+            if (currentBoard.endResult == 0){
+                System.out.println("Your predicted next move: " + currentBoard.getMinChild().move);
+                System.out.println("Your predicted next move wins: " + currentBoard.getMinChild().opWins);
+                System.out.println("Your predicted next move visits: " + currentBoard.getMinChild().visitCounter);
+                System.out.println();
             }
 
             if (currentBoard.endResult != 0){

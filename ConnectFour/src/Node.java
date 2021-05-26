@@ -64,9 +64,13 @@ public class Node {
 			System.out.println("Num wins: " + node.wins);
 			System.out.println("Num visits: " + node.visitCounter);
             System.out.format("Percentage: %.4f\n", (double)(node.wins)/(double)(node.visitCounter));
-            System.out.println("Predicted next move: " + node.getMinChild().move);
-            System.out.println("Predicted next move wins: " + node.getMinChild().opWins);
-            System.out.println("Predicted next move visits: " + node.getMinChild().visitCounter);
+
+            if (node.endResult == 0){
+                System.out.println("Your predicted next move: " + node.getMinChild().move);
+                System.out.println("Your predicted next move wins: " + node.getMinChild().opWins);
+                System.out.println("Your predicted next move visits: " + node.getMinChild().visitCounter);
+            }
+            
 			if ( nodeScore >= bestScore) {
 				bestScore = nodeScore;
 				best = node;
@@ -88,8 +92,6 @@ public class Node {
 				best = node;
 			}
 		}
-        if (best == null)
-            System.out.println("oops null");
 
         // If we have no info for the child node's yet, best will hold null
         // In this case, we will just return a random child node

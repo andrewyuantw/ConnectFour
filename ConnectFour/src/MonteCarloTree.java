@@ -75,19 +75,18 @@ public class MonteCarloTree {
 
         // We loop until we find an unexplored node 
 	    while (node.children.size() != 0) 
-            if (node.player == 2){
+            if (node.player == 2)
                 node = opUCT(node);
-            } else {
+            else
                 node = UCT(node);
-            }
 	    return node;
 	}
 	
     // UCT (Upper Confident applied to Trees) formula to find the best node to visit
 	public static double uctValue(int totalVisit, double nodeWinScore, int nodeVisit) {
-	        if (nodeVisit == 0) 
-	            return Integer.MAX_VALUE;
-		    return ((double) nodeWinScore / (double) nodeVisit) + 1.41 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
+        if (nodeVisit == 0) 
+            return Integer.MAX_VALUE;
+        return ((double) nodeWinScore / (double) nodeVisit) + 1.41 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
 	}
 	
     // Goes through the children to find the child with the highest uctValue
